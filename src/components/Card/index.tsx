@@ -5,6 +5,7 @@ import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 import { snapPoint } from "react-native-redash";
 
@@ -15,7 +16,7 @@ const CARD_WIDTH = width - 128;
 const CARD_HEIGHT = CARD_WIDTH * aspectRatio;
 const IMAGE_WIDTH = CARD_WIDTH * 0.9;
 const DURATION = 250;
-const side = (width - CARD_WIDTH) /2
+const side = (width + CARD_WIDTH + 50) /2
 const SNAP_POINTS = [-side, 0, side];
 interface CardProps {
   card: {
@@ -39,6 +40,9 @@ export const Card = ({ card: { source } }: CardProps) => {
     },
     onEnd : ({velocityX,velocityY}) => {
         const dest = snapPoint(x.value, velocityX, SNAP_POINTS)
+
+        x.value = withSpring(dest, {velocity : velocityX})
+        y.value = withSpring(0, {velocity : velocityY})
     }
   });
 
