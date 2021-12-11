@@ -1,10 +1,10 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Tarot } from './components/Tarot';
 
 
 const Main : React.FC = () => {
     return (
-        <View />
+        <Tarot />
     );
 };
 
