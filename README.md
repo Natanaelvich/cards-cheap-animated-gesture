@@ -15,10 +15,8 @@
 Cards Cheap Animated Gesture component animated made with react native, Expo and Reanimated v2.
 
 ## 🖼 GIF
-
 <p align='center'>
-<img src='' width='375' />
-
+<img src='https://user-images.githubusercontent.com/52014318/145698470-a088b896-a58f-4922-83ba-ba8c2e8da5e0.gif' width='375' />
 </p>
 
 ## ✨ Technologies!
@@ -29,7 +27,7 @@ This project was developed with the following technologies:
 - [TypeScript](https://www.typescriptlang.org/)
 - [React Native](https://reactnative.dev/)
 - [Expo](https://docs.expo.dev/)
-- [Moti](https://moti.vercel.app/)
+- [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/)
 
 ## 🚀 How to run
 
