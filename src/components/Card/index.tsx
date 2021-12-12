@@ -1,11 +1,19 @@
 import React, { useEffect } from "react";
 import { View, StyleSheet, Dimensions, Image } from "react-native";
-import { PanGestureHandler, PanGestureHandlerGestureEvent } from "react-native-gesture-handler";
+import {
+  PanGestureHandler,
+  PanGestureHandlerGestureEvent,
+} from "react-native-gesture-handler";
 import Animated, {
+  Easing,
+  EasingNode,
   useAnimatedGestureHandler,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
   withSpring,
+  withTiming,
 } from "react-native-reanimated";
 import { snapPoint } from "react-native-redash";
 
@@ -16,38 +24,92 @@ const CARD_WIDTH = width - 128;
 const CARD_HEIGHT = CARD_WIDTH * aspectRatio;
 const IMAGE_WIDTH = CARD_WIDTH * 0.9;
 const DURATION = 250;
-const side = (width + CARD_WIDTH + 50) /2
+const side = (width + CARD_WIDTH + 50) / 2;
 const SNAP_POINTS = [-side, 0, side];
 interface CardProps {
   card: {
     source: ReturnType<typeof require>;
   };
   index: number;
+  shuffleBack: Animated.SharedValue<boolean>;
 }
 
-export const Card = ({ card: { source } }: CardProps) => {
-  const x = useSharedValue(0);
-  const y = useSharedValue(0);
+export const Card = ({ card: { source }, index, shuffleBack }: CardProps) => {
+  const theta = Math.random() * 20 - 10;
 
-  const onGestureEvent = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, {x : number, y : number}>({
+  const x = useSharedValue(0);
+  const y = useSharedValue(-height);
+  const rotateZ = useSharedValue(0);
+  const scale = useSharedValue(1);
+
+  useAnimatedReaction(
+    () => shuffleBack.value,
+    () => {
+      if (shuffleBack.value) {
+        const delay = 150 * index;
+        x.value = withDelay(delay, withSpring(0));
+        rotateZ.value = withDelay(
+          delay,
+          withSpring(theta, {}, () => {
+            shuffleBack.value = false;
+          })
+        );
+      }
+    }
+  );
+  useEffect(() => {
+    const delay = 1000 + index * DURATION;
+
+    y.value = withDelay(
+      delay,
+      withTiming(0, { duration: DURATION, easing: Easing.inOut(Easing.ease) })
+    );
+
+    rotateZ.value = withDelay(
+      delay,
+      withTiming(theta, {
+        duration: DURATION,
+        easing: Easing.inOut(Easing.ease),
+      })
+    );
+  }, [y, index, rotateZ, theta]);
+
+  const onGestureEvent = useAnimatedGestureHandler<
+    PanGestureHandlerGestureEvent,
+    { x: number; y: number }
+  >({
     onStart: (_, ctx) => {
       ctx.x = x.value;
       ctx.y = y.value;
+      scale.value = withTiming(1.1, { easing: Easing.inOut(Easing.ease) });
+      rotateZ.value = withTiming(0, { easing: Easing.inOut(Easing.ease) });
     },
     onActive: ({ translationX, translationY }, ctx) => {
-      x.value = ctx.x +  translationX;
-      y.value = ctx.y +  translationY;
+      x.value = ctx.x + translationX;
+      y.value = ctx.y + translationY;
     },
-    onEnd : ({velocityX,velocityY}) => {
-        const dest = snapPoint(x.value, velocityX, SNAP_POINTS)
+    onEnd: ({ velocityX, velocityY }) => {
+      const dest = snapPoint(x.value, velocityX, SNAP_POINTS);
 
-        x.value = withSpring(dest, {velocity : velocityX})
-        y.value = withSpring(0, {velocity : velocityY})
-    }
+      x.value = withSpring(dest, { velocity: velocityX });
+      y.value = withSpring(0, { velocity: velocityY });
+      scale.value = withTiming(1, { easing: Easing.inOut(Easing.ease) }, () => {
+        if (index === 0 && dest !== 0) {
+          shuffleBack.value = true;
+        }
+      });
+    },
   });
 
   const style = useAnimatedStyle(() => ({
-    transform: [{ translateX: x.value }, { translateY: y.value }],
+    transform: [
+      { perspective: 1500 },
+      { rotateX: "30deg" },
+      { rotateZ: `${rotateZ.value}deg` },
+      { scale: scale.value },
+      { translateX: x.value },
+      { translateY: y.value },
+    ],
   }));
 
   return (
@@ -88,6 +150,5 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
   },
 });
