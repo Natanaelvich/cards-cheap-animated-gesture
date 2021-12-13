@@ -28,6 +28,8 @@ This project was developed with the following technologies:
 - [React Native](https://reactnative.dev/)
 - [Expo](https://docs.expo.dev/)
 - [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/)
+- [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/)
+- [react-native-redash](https://github.com/wcandillon/react-native-redash)
 
 ## 🚀 How to run
 
