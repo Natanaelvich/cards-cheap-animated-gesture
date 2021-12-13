@@ -12,7 +12,7 @@
 
 ## 📋 Description
 
-Cards Cheap Animated Gesture component animated made with react native, Expo and Reanimated v2.
+Cards Cheap Animated Gesture component animated made with react native, Expo, Reanimated v2 and Gesture Handler.
 
 ## 🖼 GIF
 <p align='center'>
